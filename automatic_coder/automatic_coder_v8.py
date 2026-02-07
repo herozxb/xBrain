@@ -10,9 +10,13 @@ import fileinput
 def generate_python_code():
     code = """
 # Use DeepSeek Coder V2 to suggest fixes based on the error output
- a
- b
- c
+def sample_function():
+a
+b
+c
+d
+e
+f1111
     """
     with open("python_code.py", "w") as f:
         f.write(code)
@@ -30,28 +34,42 @@ def run_python_file():
 
 
 def fix_bug(error_output):
-    print("# 2.1 Fixing bug based on error output...")
-    print(f"# 2.2 Detected error: {error_output}. Using DeepSeek Coder V2 to fix the issue.")
+    print("# 2.1 Analyzing error for fix...")
     
-    # Extract line number from typical Python traceback (e.g., 'File "python_code.py", line 12')
+    # Extract line number from typical Python traceback
     match = re.search(r'line (\d+)', error_output)
     if not match:
-        print("# Error: Could not parse line number from stderr.")
+        print("# Error: Could not parse line number.")
         return
 
     target_line_no = int(match.group(1))
+    
+    # Logic to fix the reporting discrepancy:
+    # If the error is 'expected an indented block', the real issue is usually the line ABOVE.
+    if "IndentationError: expected an indented block" in error_output:
+        print(f"# 2.2 Detected IndentationError on line {target_line_no}. Adjusting target to line {target_line_no - 1}.")
+        target_line_no -= 1
+
     fix_suggestion = get_deepseek_fix(error_output).strip()
 
     if fix_suggestion:
-        print(f"# 2.3 ================ Suggested fix for line [{target_line_no}]: ================ \n{fix_suggestion}")
+        print(f"# 2.3 === Suggested fix for line [{target_line_no}]: === \n{fix_suggestion}")
         
         # Use fileinput for in-place editing
-        # Note: fileinput is 1-indexed, matching traceback line numbers
         with fileinput.input("python_code.py", inplace=True) as file:
             for line in file:
                 if file.lineno() == target_line_no:
-                    indent = line[:len(line) - len(line.lstrip())-1]
-                    print(f"{indent}{fix_suggestion}")
+                    # ---- DELETE original line by NOT printing it ----
+
+                    if 1:
+                        # capture original indentation
+                        indent = line[:len(line) - len(line.lstrip())]
+                    else:
+                        indent = ""
+
+                    # ---- INSERT new code ----
+                    for new_line in fix_suggestion.splitlines():
+                        print(f"{indent}{new_line}")
                 else:
                     print(line, end='')
 
