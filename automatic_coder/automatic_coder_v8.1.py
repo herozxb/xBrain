@@ -17,6 +17,10 @@ def sample_function():
     d
 e
         f1111
+        prompt = " write hello world"
+        # Sending code to DeepSeek Coder V2
+        response = ollama.chat(model=model_name, messages=[{"role": "user", "content": prompt}])
+        suggested_code = response['message']['content']
     """
     with open("python_code.py", "w") as f:
         f.write(code)
@@ -121,6 +125,7 @@ def deepseek_fix_whole_code( stderr ):
             whole_code = file.read()
 
         print(f"Original code:\n{whole_code}")
+        print("=========================deepseek_fix_whole_code=============================")
         
         # Send the entire code to DeepSeek Coder V2 for a fix suggestion
         model_name = "deepseek-coder-v2:latest"
@@ -165,7 +170,7 @@ def main():
             print("Code ran successfully, no bugs found.")
             # Exit loop if no errors
             break  
-            
+
         counter+=1
         if counter > 5 and result.stderr :
             deepseek_fix_whole_code( result.stderr )
