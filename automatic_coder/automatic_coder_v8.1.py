@@ -83,7 +83,8 @@ def get_deepseek_fix(error_output):
     # Use DeepSeek Coder V2 to suggest fixes based on the error output
     model_name = "deepseek-coder-v2:latest"  # Replace with your DeepSeek model name
     prompt = f"""Fix the following Python code error: {error_output}. 
-    Suggest a solution for the issue.CODE QUALITY:
+    Suggest a solution for the issue.
+    CODE QUALITY:
     - No explanatory text or comments
     - Production-ready code
     """
@@ -107,7 +108,7 @@ def get_deepseek_fix(error_output):
         print(f"Error using DeepSeek Coder V2: {e}")
         return None
 
-def deepseek_fix_whole_code():
+def deepseek_fix_whole_code( stderr ):
     try:
         # Read the entire content of python_code.py
         with open("python_code.py", "r") as file:
@@ -117,7 +118,13 @@ def deepseek_fix_whole_code():
         
         # Send the entire code to DeepSeek Coder V2 for a fix suggestion
         model_name = "deepseek-coder-v2:latest"
-        prompt = f"Fix the following Python code:\n\n{whole_code}\n\nProvide the fixed version of the code."
+        prompt = f"""Fix the following Python code:\n\n
+            {whole_code}\n\nProvide the fixed version of the code. 
+            the error message is {stderr}
+            CODE QUALITY:
+                - No explanatory text or comments
+                - Production-ready code
+            """
         
         # Sending code to DeepSeek Coder V2
         response = ollama.chat(model=model_name, messages=[{"role": "user", "content": prompt}])
@@ -154,8 +161,8 @@ def main():
             print("Code ran successfully, no bugs found.")
             break  # Exit loop if no errors
         counter+=1
-        if counter > 5:
-            deepseek_fix_whole_code()
+        if counter > 5 and result.stderr :
+            deepseek_fix_whole_code( result.stderr )
             counter=0
 
 if __name__ == "__main__":

@@ -1,15 +1,10 @@
 def sample_function():
     def example_function():
         # Function body goes here
-        pass
-        a = 10
-        print(a)
-    
-    example_function()
-    a = 10  # Assigning value to 'a' inside the scope of sample_function
-    b = 20
-    c = a + b
-    print(c)
+        pass  # Placeholder to define an empty block of code
 
-# Call the main function
-sample_function()
+        a = 10
+        b = 20
+        c = a + b
+
+# Your function implementation goes here
