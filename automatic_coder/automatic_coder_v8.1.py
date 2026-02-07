@@ -21,6 +21,10 @@ e
     with open("python_code.py", "w") as f:
         f.write(code)
 
+def overwrite_python_code(code):
+    with open("python_code.py", "w") as f:
+        f.write(code)
+
 # Step 2: Run the generated Python file
 def run_python_file():
     try:
@@ -103,10 +107,40 @@ def get_deepseek_fix(error_output):
         print(f"Error using DeepSeek Coder V2: {e}")
         return None
 
+def deepseek_fix_whole_code():
+    try:
+        # Read the entire content of python_code.py
+        with open("python_code.py", "r") as file:
+            whole_code = file.read()
+
+        print(f"Original code:\n{whole_code}")
+        
+        # Send the entire code to DeepSeek Coder V2 for a fix suggestion
+        model_name = "deepseek-coder-v2:latest"
+        prompt = f"Fix the following Python code:\n\n{whole_code}\n\nProvide the fixed version of the code."
+        
+        # Sending code to DeepSeek Coder V2
+        response = ollama.chat(model=model_name, messages=[{"role": "user", "content": prompt}])
+        suggested_code = response['message']['content']
+        
+        print(f"Suggested fixed code from DeepSeek Coder V2:\n{suggested_code}")
+
+        if "```python" in suggested_code and "```" in suggested_code:
+            # Extract code between ```python and closing ```
+            start = suggested_code.find("```python") + len("```python")
+            end = suggested_code.find("```", start)
+            code = suggested_code[start:end].strip()
+            # Overwrite python_code.py with the fixed code
+            overwrite_python_code(code)
+    
+    except Exception as e:
+        print(f"Error fixing the whole code with DeepSeek Coder V2: {e}")
+
 
 # Main loop to generate, run, debug, fix, and repeat
 def main():
     generate_python_code()  # Step 1: Generate code
+    counter = 0
     while True:
         
         result = run_python_file()  # Step 2: Run the code
@@ -119,6 +153,10 @@ def main():
         else:
             print("Code ran successfully, no bugs found.")
             break  # Exit loop if no errors
+        counter+=1
+        if counter > 5:
+            deepseek_fix_whole_code()
+            counter=0
 
 if __name__ == "__main__":
     main()
