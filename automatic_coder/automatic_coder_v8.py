@@ -10,20 +10,9 @@ import fileinput
 def generate_python_code():
     code = """
 # Use DeepSeek Coder V2 to suggest fixes based on the error output
-model_name = "deepseek-coder-v2:latest"  # Replace with your DeepSeek model name
-prompt = f"generate a code to do 1+1. CODE QUALITY: - No explanatory text or comments - Production-ready code"
-
-print("# 3.1 Fixing the bug by the LLM of deepseek-coder-v2")
-# Sending the error message to DeepSeek Coder V2 for suggestions
-response = ollama.chat(model=model_name, messages=[{"role": "user", "content": prompt}])
-# Extracting the Python code from the response and ensuring it's wrapped in triple backticks with 'python'
-suggested_code = response['message']['content']
-if "```python" in suggested_code and "```" in suggested_code:
-    # Extract code between ```python and closing ```
-    start = suggested_code.find("```python") + len("```python")
-    end = suggested_code.find("```", start)
-    code = suggested_code[start:end].strip()
-
+ a
+ b
+ c
     """
     with open("python_code.py", "w") as f:
         f.write(code)
@@ -54,15 +43,14 @@ def fix_bug(error_output):
     fix_suggestion = get_deepseek_fix(error_output).strip()
 
     if fix_suggestion:
-        print(f"# 2.3 === Suggested fix for line {target_line_no}: === \n{fix_suggestion}")
+        print(f"# 2.3 ================ Suggested fix for line [{target_line_no}]: ================ \n{fix_suggestion}")
         
         # Use fileinput for in-place editing
         # Note: fileinput is 1-indexed, matching traceback line numbers
         with fileinput.input("python_code.py", inplace=True) as file:
             for line in file:
                 if file.lineno() == target_line_no:
-                    # Maintain indentation by capturing it from the original line if needed
-                    indent = line[:len(line) - len(line.lstrip())]
+                    indent = line[:len(line) - len(line.lstrip())-1]
                     print(f"{indent}{fix_suggestion}")
                 else:
                     print(line, end='')
