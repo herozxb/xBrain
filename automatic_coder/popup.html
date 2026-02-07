@@ -1,0 +1,25 @@
+
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Confirmation Popup</title>
+            <script>
+                function askUser() {
+                    var userChoice = confirm('Do you want to update the plan?');
+                    if (userChoice) {
+                        // Send response to Python script indicating the plan is updated
+                        window.location.href = 'http://localhost:5000/update_plan/yes';
+                    } else {
+                        window.location.href = 'http://localhost:5000/update_plan/no';
+                    }
+                }
+                window.onload = askUser;
+            </script>
+        </head>
+        <body>
+            <h2>Please confirm if you want to update the plan</h2>
+        </body>
+        </html>
+        

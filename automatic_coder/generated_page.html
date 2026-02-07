@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Clone</title>
+    <title>YouTube Inspired Layout</title>
     <style>
         :root {
             --primary-color: #ff0000;
@@ -25,91 +25,59 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: var(--spacing) calc(var(--spacing) * 2);
-            background-color: var(--secondary-color);
-        }
-
-        .logo {
-            height: 24px;
-        }
-
-        nav form {
-            display: flex;
-            align-items: center;
-        }
-
-        input[type="text"] {
-            width: 300px;
             padding: var(--spacing);
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .actions button, .chips button {
-            margin: 0 var(--spacing);
-            padding: var(--spacing) calc(var(--spacing) * 2);
-            border: none;
-            background-color: #f2f2f2;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .chips {
-            display: flex;
-            overflow-x: auto;
-            padding: var(--spacing) calc(var(--spacing) * 2);
             background-color: var(--secondary-color);
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .search-bar input, .search-bar button {
+            padding: calc(var(--spacing) / 2);
+            border: none;
+            outline: none;
+        }
+
+        .search-bar input {
+            flex: 1;
+        }
+
+        .actions button {
+            margin-left: var(--spacing);
         }
 
         main {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: var(--spacing);
-            padding: var(--spacing) calc(var(--spacing) * 2);
+            padding: var(--spacing);
         }
 
         .video-card {
-            display: flex;
-            flex-direction: column;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .thumbnail {
             position: relative;
+            background-color: var(--secondary-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
         }
 
-        .thumbnail img {
+        .video-card img {
             width: 100%;
-            height: auto;
-        }
-
-        .duration {
-            position: absolute;
-            bottom: var(--spacing);
-            right: var(--spacing);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #ffffff;
-            padding: 2px 4px;
-            border-radius: 4px;
+            display: block;
         }
 
         .video-info {
-            display: flex;
-            align-items: start;
-            margin-top: var(--spacing);
+            padding: var(--spacing);
         }
 
-        .channel-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            margin-right: var(--spacing);
-        }
-
-        .video-title, .channel-name {
-            font-size: 14px;
+        .video-title, .video-meta {
             margin: 0;
+        }
+
+        .load-more {
+            display: flex;
+            justify-content: center;
+            padding: var(--spacing);
         }
 
         footer {
@@ -118,55 +86,37 @@
             padding: var(--spacing);
             background-color: var(--secondary-color);
         }
-
-        footer a {
-            text-decoration: none;
-            color: inherit;
-        }
     </style>
 </head>
 <body>
-    <header>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="YouTube Logo" class="logo">
-        <nav>
-            <form action="#">
-                <input type="text" placeholder="Search...">
-            </form>
-        </nav>
+    <header class="header">
+        <div class="logo"><img src="https://via.placeholder.com/100" alt="Logo"></div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search...">
+            <button>Search</button>
+        </div>
         <div class="actions">
-            <button type="button">Sign in</button>
-            <button type="button">Join now</button>
+            <button>Login</button>
+            <button>Signup</button>
         </div>
     </header>
-    <section class="chips">
-        <button type="button">All</button>
-        <button type="button">Music</button>
-        <button type="button">Gaming</button>
-        <button type="button">News</button>
-        <button type="button">Movies</button>
-    </section>
-    <main>
-        <article class="video-card">
-            <div class="thumbnail">
-                <img src="https://i.ytimg.com/vi/VIDEO_ID/maxresdefault.jpg" alt="Video Thumbnail">
-                <span class="duration">5:30</span>
-            </div>
-            <div class="video-info">
-                <img src="https://example.com/channel-avatar.jpg" alt="Channel Avatar" class="channel-avatar">
-                <div>
-                    <h2 class="video-title">Video Title</h2>
-                    <p class="channel-name">Channel Name</p>
-                </div>
-            </div>
-        </article>
-        <!-- Repeat for other video cards -->
+    <nav>
+        <div class="chips-row">
+            <button>Trending</button>
+            <button>Music</button>
+            <button>Gaming</button>
+            <button>Education</button>
+        </div>
+    </nav>
+    <main class="main-grid">
+        <!-- Video Cards will be dynamically added here -->
     </main>
-    <footer>
+    <div class="load-more"><button>Load More</button></div>
+    <footer class="footer">
         <a href="#">About</a>
-        <a href="#">Press</a>
-        <a href="#">Copyright</a>
-        <a href="#">Contact us</a>
-        <a href="#">Creators</a>
+        <a href="#">Contact Us</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Privacy Policy</a>
     </footer>
 </body>
 </html>
