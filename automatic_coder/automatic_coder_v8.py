@@ -53,7 +53,7 @@ def fix_bug(error_output):
     fix_suggestion = get_deepseek_fix(error_output).strip()
 
     if fix_suggestion:
-        print(f"# 2.3 === Suggested fix for line [{target_line_no}]: === \n{fix_suggestion}")
+        print(f"# 2.3 ================= Suggested fix for line [{target_line_no}]: ================= \n{fix_suggestion}")
         
         # Use fileinput for in-place editing
         with fileinput.input("python_code.py", inplace=True) as file:
