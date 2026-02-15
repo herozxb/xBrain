@@ -13,4 +13,5 @@ then I can train a LLM to decide which database to use of the N database
 # 3.4 heatmap reverse engineering
 
 
-
+1. Structure your Knowledge as "Pairs"
+If you store the error and the fix in the same text block, the LLM often sees the error line first and thinks that is the "knowledge." You should store them as a Problem/Solution pair in your metadata or clearly labeled text.

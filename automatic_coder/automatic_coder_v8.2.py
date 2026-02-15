@@ -4,6 +4,23 @@ import ollama
 import re
 import fileinput
 
+import os
+from langchain_community.llms import Ollama
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.chains import RetrievalQA
+
+# --- INITIAL SETUP ---
+embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+db_path = "my_RAG_index"
+llm = Ollama(model="deepseek-coder-v2")
+
+vectorstore = FAISS.load_local(db_path, embeddings, allow_dangerous_deserialization=True)
+
+
+# Initialize the RAG Chain
+qa_chain = RetrievalQA.from_chain_type(llm, retriever=vectorstore.as_retriever())
 
 
 # Step 1: Generate Python code and save to a file
@@ -17,7 +34,15 @@ def sample_function():
     d
 e
         f1111
+        prompt = " write hello world"
+        # Sending code to DeepSeek Coder V2
+        response = ollama.chat(model=model_name, messages=[{"role": "user", "content": prompt}])
+        suggested_code = response['message']['content']
     """
+    with open("python_code.py", "w") as f:
+        f.write(code)
+
+def overwrite_python_code(code):
     with open("python_code.py", "w") as f:
         f.write(code)
 
@@ -72,6 +97,19 @@ def fix_bug(error_output):
                         print(f"{indent}{new_line}")
                 else:
                     print(line, end='')
+        print("========================[fix end]===========================")
+def get_python_code(LLM_code):
+
+    if "```python" in LLM_code and "```" in LLM_code:
+        # Extract code between ```python and closing ```
+        start = LLM_code.find("```python") + len("```python")
+        end = LLM_code.find("```", start)
+        code = LLM_code[start:end].strip()
+        return code
+    else:
+        # If no ```python``` block is found, return the full response
+        return LLM_code
+
 
 
 # Initialize DeepSeek Coder V2 model
@@ -79,46 +117,105 @@ def get_deepseek_fix(error_output):
     # Use DeepSeek Coder V2 to suggest fixes based on the error output
     model_name = "deepseek-coder-v2:latest"  # Replace with your DeepSeek model name
     prompt = f"""Fix the following Python code error: {error_output}. 
-    Suggest a solution for the issue.CODE QUALITY:
+    Suggest a solution for the issue.
+    CODE QUALITY:
     - No explanatory text or comments
     - Production-ready code
     """
 
     try:
+        print("AI RAG Thinking...")
+        response = qa_chain.invoke(error_output)
+        print(f"AI > {response['result']}")
+
+        retrieved_info = response['result']
+
+        # 2. Final prompt that forces DeepSeek to be the judge
+        final_prompt = f"""
+        DEBUGGING TASK:
+        Problem: {error_output}
+        Retrieved Suggestions: {retrieved_info}
+
+        CRITICAL INSTRUCTION:
+        The 'Retrieved Suggestion' might be an echo of the bug. 
+        Use your internal DeepSeek Coder V2 logic to provide the ACTUAL production-ready fix.
+        Output ONLY the code.
+        """
+
         print("# 3.1 Fixing the bug by the LLM of deepseek-coder-v2")
         # Sending the error message to DeepSeek Coder V2 for suggestions
-        response = ollama.chat(model=model_name, messages=[{"role": "user", "content": prompt}])
+        response = ollama.chat(model=model_name, messages=[{"role": "user", "content": final_prompt}])
         # Extracting the Python code from the response and ensuring it's wrapped in triple backticks with 'python'
         suggested_code = response['message']['content']
-        if "```python" in suggested_code and "```" in suggested_code:
-            # Extract code between ```python and closing ```
-            start = suggested_code.find("```python") + len("```python")
-            end = suggested_code.find("```", start)
-            code = suggested_code[start:end].strip()
-            return code
-        else:
-            # If no ```python``` block is found, return the full response
-            return suggested_code
+
+
+        return get_python_code(suggested_code)
+
     except Exception as e:
         print(f"Error using DeepSeek Coder V2: {e}")
         return None
 
+def deepseek_fix_whole_code( stderr ):
+    try:
+        # Read the entire content of python_code.py
+        with open("python_code.py", "r") as file:
+            whole_code = file.read()
+
+        print(f"Original code:\n{whole_code}")
+        print("=========================deepseek_fix_whole_code=============================")
+        
+        # Send the entire code to DeepSeek Coder V2 for a fix suggestion
+        model_name = "deepseek-coder-v2:latest"
+        prompt = f"""Fix the following Python code:\n\n
+            {whole_code}\n\nProvide the fixed version of the code. 
+            the error message is {stderr}
+
+            TODO:   1. fix the code to import the ollama and use ollama to chat
+                    2. delete all the code whihc is no relation with the ollama, only import ollama no others
+
+            CODE QUALITY:
+                - No explanatory text or comments
+                - Production-ready code
+            """
+        
+        # Sending code to DeepSeek Coder V2
+        response = ollama.chat(model=model_name, messages=[{"role": "user", "content": prompt}])
+        suggested_code = response['message']['content']
+        
+        print(f"Suggested fixed code from DeepSeek Coder V2:\n{suggested_code}")
+
+        overwrite_python_code(get_python_code(suggested_code))
+    
+    except Exception as e:
+        print(f"Error fixing the whole code with DeepSeek Coder V2: {e}")
+
 
 # Main loop to generate, run, debug, fix, and repeat
 def main():
-    generate_python_code()  # Step 1: Generate code
+    # Step 1: Generate code
+    generate_python_code()  
+    counter = 0
     while True:
-        
-        result = run_python_file()  # Step 2: Run the code
+
+        # Step 2: Run the code
+        result = run_python_file()  
 
         if result and result.stderr:
             # Step 3: If there's an error, capture the error and fix the bug
             print(f"Bug detected, error message: {result.stderr}")
-            fix_bug(result.stderr)  # Pass the error message to the fix_bug function
-            time.sleep(1)  # Sleep to simulate debugging delay
+            # Pass the error message to the fix_bug function
+            fix_bug(result.stderr)  
+            # Sleep to simulate debugging delay
+            time.sleep(1)  
         else:
             print("Code ran successfully, no bugs found.")
-            break  # Exit loop if no errors
+            # Exit loop if no errors
+            break  
+
+        counter+=1
+        if counter > 5 and result.stderr :
+            deepseek_fix_whole_code( result.stderr )
+            counter=0
 
 if __name__ == "__main__":
     main()

@@ -10,18 +10,12 @@ vectorstore = FAISS.load_local("my_RAG_index", embeddings, allow_dangerous_deser
 
 # 3. Prepare your NEW data
 new_text = """Bug detected, error message: Traceback (most recent call last):
-  File "/Users/xibozhang/Documents/xBrain/automatic_coder/python_code.py", line 18, in <module>
-    response = ollama.chat(model=model_name, messages=[{"role": "user", "content": prompt}])
-  File "/Users/xibozhang/miniconda3/envs/RAG/lib/python3.10/site-packages/ollama/_client.py", line 365, in chat
-    return self._request(
-  File "/Users/xibozhang/miniconda3/envs/RAG/lib/python3.10/site-packages/ollama/_client.py", line 189, in _request
-    return cls(**self._request_raw(*args, **kwargs).json())
-  File "/Users/xibozhang/miniconda3/envs/RAG/lib/python3.10/site-packages/ollama/_client.py", line 133, in _request_raw
-    raise ResponseError(e.response.text, e.response.status_code) from None
-ollama._types.ResponseError: model 'your_model_name' not found (status code: 404)
+  File "/Users/xibozhang/Documents/xBrain/automatic_coder/python_code.py", line 2, in <module>
+    from ollama import Ollama  # Assuming there is such a module, adjust the import accordingly
+ImportError: cannot import name 'Ollama' from 'ollama' (/Users/xibozhang/miniconda3/envs/RAG/lib/python3.10/site-packages/ollama/__init__.py)
 
 '''python
-response = ollama.chat(model="deepseek-coder-v2", messages=[{"role": "user", "content": prompt}])
+import ollama
 '''
 """
 text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)

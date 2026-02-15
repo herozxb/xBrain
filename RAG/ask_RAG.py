@@ -18,7 +18,6 @@ qa_chain = RetrievalQA.from_chain_type(llm, retriever=vectorstore.as_retriever()
 print("--- M3 RAG System Ready ---")
 print("Instructions:")
 print("- Just type your question to ask the AI.")
-print("- Type 'ADD: [your text]' to add new knowledge.")
 print("- Type 'exit' to quit.")
 
 # --- INTERACTIVE LOOP ---
@@ -28,21 +27,6 @@ while True:
     if user_input.lower() in ['exit', 'quit']:
         break
     
-    # Mode: Add new knowledge
-    if user_input.startswith("ADD:"):
-        new_content = user_input.replace("ADD:", "").strip()
-        text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
-        new_docs = text_splitter.create_documents([new_content])
-        
-        vectorstore.add_documents(new_docs)
-        vectorstore.save_local(db_path) # Persist to M3 disk immediately
-        print(f"✅ Knowledge saved to {db_path}!")
-        
-        # Refresh the chain with new data
-        qa_chain = RetrievalQA.from_chain_type(llm, retriever=vectorstore.as_retriever())
-
-    # Mode: Question & Answer
-    else:
-        print("AI Thinking...")
-        response = qa_chain.invoke(user_input)
-        print(f"AI > {response['result']}")
+    print("AI Thinking...")
+    response = qa_chain.invoke(user_input)
+    print(f"AI > {response['result']}")
