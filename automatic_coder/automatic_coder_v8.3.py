@@ -149,7 +149,7 @@ def get_deepseek_fix(error_output):
 
         """
 
-        print("AI RAG Thinking...")
+        print("# 3.2 AI RAG Thinking...")
         response = qa_chain.invoke(template)
         print(f"AI > {response['result']}")
 
@@ -208,7 +208,7 @@ def main():
 
         if result and result.stderr:
             # Step 3: If there's an error, capture the error and fix the bug
-            print(f"Bug detected, error message: {result.stderr}")
+            print(f"# 1.3 Bug detected, error message: {result.stderr}")
             # Pass the error message to the fix_bug function
             fix_bug(result.stderr)  
             # Sleep to simulate debugging delay
