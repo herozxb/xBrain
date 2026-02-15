@@ -80,7 +80,7 @@ def fix_bug(error_output):
                         print(f"{indent}{new_line}")
                 else:
                     print(line, end='')
-
+        print("========================[fix end]===========================")
 def get_python_code(LLM_code):
 
     if "```python" in LLM_code and "```" in LLM_code:
@@ -132,6 +132,10 @@ def deepseek_fix_whole_code( stderr ):
         prompt = f"""Fix the following Python code:\n\n
             {whole_code}\n\nProvide the fixed version of the code. 
             the error message is {stderr}
+
+            TODO:   1. fix the code to import the ollama and use ollama to chat
+                    2. delete all the code whihc is no relation with the ollama, only import ollama no others
+
             CODE QUALITY:
                 - No explanatory text or comments
                 - Production-ready code
