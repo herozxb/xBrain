@@ -30,3 +30,13 @@ vectorstore.save_local("my_RAG_index")
 # 6. Ask a question
 question = "What process does the M3 chip use?"
 print(qa_chain.invoke(question))
+
+
+#conda install pytorch torchvision torchaudio -c pytorch -y
+#pip install transformers==4.38.0
+#pip install sentence-transformers==2.2.2
+#pip install faiss-cpu==1.7.4
+#pip install langchain==0.1.9
+#pip install llama-cpp-python==0.2.56
+#pip install accelerate==0.27.2
+#pip install --upgrade sentence-transformers huggingface-hub
