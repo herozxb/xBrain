@@ -32,3 +32,7 @@ Flexibility of Patterns: The most interesting part is that these patterns aren't
 Learning Without Explicit Supervision: This is where it gets intriguing—LLMs learn these patterns largely through unsupervised learning, meaning they don’t require labeled data for every task. The patterns are learned from the data distribution itself. When you give a prompt, the model draws upon these patterns and applies them in a way that seems "intelligent."
 
 In essence, the LLM's ability to understand and generate human-like language is entirely based on its learned patterns—those are what form the core of its capabilities.
+
+# 3. make it simple for LLM to learn, we are to hard for LLM now
+1. atom token, lexer with AST
+2. make it simple for LLM to learn
