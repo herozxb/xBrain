@@ -1,25 +1,158 @@
+<!-- PROBLEM: Apply visual effects to background behind element -->
+<!-- TIME: O(1) SPACE: O(1) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Backdrop Filter Demo</title>
+    <style>
+        /* Background with colorful gradient for demo */
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
 
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Confirmation Popup</title>
-            <script>
-                function askUser() {
-                    var userChoice = confirm('Do you want to update the plan?');
-                    if (userChoice) {
-                        // Send response to Python script indicating the plan is updated
-                        window.location.href = 'http://localhost:5000/update_plan/yes';
-                    } else {
-                        window.location.href = 'http://localhost:5000/update_plan/no';
-                    }
+        /* Glassmorphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); /* Safari */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px;
+        }
+
+        /* Blur effect */
+        .blur-bg {
+            backdrop-filter: blur(5px);
+        }
+
+        /* Frosted glass */
+        .frosted {
+            backdrop-filter: blur(20px) saturate(180%);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Dark mode glass */
+        .dark-glass {
+            backdrop-filter: blur(16px) brightness(0.8);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        /* Saturation boost */
+        .saturated {
+            backdrop-filter: saturate(200%);
+        }
+
+        /* Grayscale background */
+        .grayscale-bg {
+            backdrop-filter: grayscale(100%);
+        }
+
+        /* Combined effects */
+        .combined {
+            backdrop-filter: 
+                blur(8px)
+                brightness(1.1)
+                contrast(1.1)
+                saturate(1.2);
+        }
+
+        /* Fallback for unsupported browsers */
+        @supports not (backdrop-filter: blur(1px)) {
+            .glass {
+                background: rgba(255, 255, 255, 0.9);
+            }
+        }
+
+        /* Modal with backdrop filter */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Navigation bar with backdrop */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            backdrop-filter: blur(12px) saturate(180%);
+            background: rgba(255, 255, 255, 0.7);
+            padding: 16px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <span>Glassmorphism Navigation</span>
+    </nav>
+
+    <div class="glass">
+        <h2>Glass Effect</h2>
+        <p>Content with frosted glass background effect</p>
+    </div>
+
+    <div class="dark-glass">
+        <h2>Dark Glass</h2>
+        <p>Dark mode glassmorphism</p>
+    </div>
+
+    <script>
+        // Check backdrop-filter support
+        function supportsBackdropFilter() {
+            return CSS.supports('backdrop-filter', 'blur(1px)') ||
+                   CSS.supports('-webkit-backdrop-filter', 'blur(1px)');
+        }
+
+        // Apply fallback if not supported
+        if (!supportsBackdropFilter()) {
+            document.querySelectorAll('.glass, .frosted, .dark-glass').forEach(el => {
+                el.style.background = 'rgba(255, 255, 255, 0.95)';
+            });
+        }
+
+        // Dynamic blur intensity based on scroll
+        const navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const blurAmount = Math.min(scrollY / 10, 20);
+            navbar.style.backdropFilter = `blur(${blurAmount}px) saturate(180%)`;
+        });
+
+        // Create modal with backdrop blur
+        function showModal(content) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal-content">${content}</div>
+            `;
+            
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.remove();
                 }
-                window.onload = askUser;
-            </script>
-        </head>
-        <body>
-            <h2>Please confirm if you want to update the plan</h2>
-        </body>
-        </html>
-        
+            });
+            
+            document.body.appendChild(overlay);
+        }
+
+        // Example: showModal('<h2>Hello</h2><p>Modal content</p>');
+    </script>
+</body>
+</html>
